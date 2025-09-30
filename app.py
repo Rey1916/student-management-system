@@ -87,15 +87,15 @@ def logout():
     return redirect("/")
 
 if __name__ == "__main__":
-    print("🚀 Starting Student Management System...")
-    print("📡 Testing database connection...")
+    print("Starting Student Management System...")
+    print("Testing database connection...")
     
     conn = get_db_connection()
     if conn:
-        print("✅ Database connection successful!")
+        print("Database connection successful!")
         conn.close()
-        print("🌐 Starting Flask server on http://127.0.0.1:5000")
+        print("Starting Flask server on http://127.0.0.1:5000")
         app.run(debug=True)
     else:
-        print("❌ Cannot start application - Database connection failed!")
-        print("📋 Please check your database connection settings.")
+        print("Cannot start application - Database connection failed!")
+        print("Please check your database connection settings.")
