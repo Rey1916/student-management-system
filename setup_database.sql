@@ -16,8 +16,6 @@ CREATE TABLE Students (
     username NVARCHAR(50) UNIQUE NOT NULL,
     password NVARCHAR(255) NOT NULL,
     name NVARCHAR(100) NOT NULL,
-    email NVARCHAR(100),
-    created_date DATETIME DEFAULT GETDATE()
 );
 
 -- Create Courses table
@@ -47,10 +45,10 @@ CREATE TABLE Attendance (
 
 -- Insert sample students
 INSERT INTO Students (username, password, name, email) VALUES 
-('rey', 'rey1916', 'Shrey Patel', 'rey@student.edu'),
-('jkaus', 'kaus6545', 'Kaustubh Umrao', 'kaus@student.edu'),
-('kallu', 'atisbaaj0803', 'Abhishek Sharma', 'abhi@student.edu'),
-('kumari', 'kumari06', 'Himanshu Kumar', 'hima@student.edu');
+('rey', 'rey1916', 'Shrey Patel'),
+('kaus', 'kaus6545', 'Kaustubh Umrao'),
+('kallu', 'atisbaaj0803', 'Abhishek Sharma'),
+('kumari', 'kumari06', 'Himanshu Kumar');
 
 -- Insert sample courses
 INSERT INTO Courses (course_name) VALUES 
