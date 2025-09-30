@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Modern SMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='modern_style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Student Management System</span>
+            </div>
+            <div class="nav-user">
+                <span>Welcome back, <strong>{{ name }}</strong>!</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </nav>
+        
+        <div class="dashboard-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'error' %}exclamation-triangle{% elif category == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Student Info Card -->
+            {% if student_info %}
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="fas fa-user-graduate"></i>
+                    <h2>Student Profile</h2>
+                </div>
+                <div class="card-content">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Full Name:</strong><br>
+                            {{ student_info[0] }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Username:</strong><br>
+                            {{ student_info[1] }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Student ID:</strong><br>
+                            #{{ student_info[2] }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Status:</strong><br>
+                            Active Student
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Courses and Attendance -->
+            <div class="courses-card">
+                <div class="card-header">
+                    <i class="fas fa-book-open"></i>
+                    <h2>My Courses & Attendance</h2>
+                </div>
+                <div class="card-content">
+                    {% if courses %}
+                        <div class="courses-grid">
+                            {% for course in courses %}
+                                <div class="course-item">
+                                    <div class="course-header">
+                                        <h3>{{ course[0] }}</h3>
+                                        <span class="course-code">Course</span>
+                                    </div>
+                                    <div class="course-details">
+                                        <div class="attendance">
+                                            <span class="attendance-label">Attendance:</span>
+                                            {% if course[1] is not none %}
+                                                <span class="attendance-value attendance-{{ 'good' if course[1] >= 80 else 'warning' if course[1] >= 60 else 'poor' }}">
+                                                    {{ "%.1f"|format(course[1]) }}%
+                                                </span>
+                                            {% else %}
+                                                <span class="attendance-value attendance-na">Not Available</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="enrollment-date">
+                                            <small><i class="fas fa-calendar"></i> Enrolled Course</small>
+                                        </div>
+                                    </div>
+                                    <div class="attendance-bar">
+                                        {% if course[1] is not none %}
+                                            <div class="attendance-progress" style="width: {{ course[1] }}%"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="no-courses">
+                            <i class="fas fa-book-open"></i>
+                            <h3>No Courses Found</h3>
+                            <p>You are not enrolled in any courses yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Statistics Summary -->
+            {% if courses %}
+            <div class="stats-card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>Academic Statistics</h2>
+                </div>
+                <div class="card-content">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">{{ courses|length }}</div>
+                            <div class="stat-label">Total Courses</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">
+                                {% set attendance_courses = courses|selectattr(1, 'none')|list|length %}
+                                {{ (courses|length - attendance_courses) }}
+                            </div>
+                            <div class="stat-label">With Attendance</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">
+                                {% set total_attendance = 0 %}
+                                {% set count = 0 %}
+                                {% for course in courses %}
+                                    {% if course[1] is not none %}
+                                        {% set total_attendance = total_attendance + course[1] %}
+                                        {% set count = count + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if count > 0 %}
+                                    {{ "%.1f"|format(total_attendance / count) }}%
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </div>
+                            <div class="stat-label">Average Attendance</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">
+                                {% set good_attendance = 0 %}
+                                {% for course in courses %}
+                                    {% if course[1] is not none and course[1] >= 80 %}
+                                        {% set good_attendance = good_attendance + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ good_attendance }}
+                            </div>
+                            <div class="stat-label">Excellent Performance</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
